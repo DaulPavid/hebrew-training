@@ -1,24 +1,58 @@
 <script setup lang="ts">
 import { useExerciseStore } from '@/stores/exerciseStore'
 import { useProgressStore } from '@/stores/progressStore'
+import { useVocabStore } from '@/stores/vocabStore'
 import ExerciseList from '@/components/exercises/ExerciseList.vue'
 
 const exerciseStore = useExerciseStore()
 const progressStore = useProgressStore()
+const vocabStore = useVocabStore()
+
+const emit = defineEmits<{
+  'mode-change': [mode: 'typing' | 'vocab']
+}>()
+
+function selectTypingMode() {
+  emit('mode-change', 'typing')
+}
+
+function selectVocabMode() {
+  exerciseStore.clearExercise()
+  emit('mode-change', 'vocab')
+}
 </script>
 
 <template>
   <aside class="sidebar">
-    <h1>הקלדה עיוורת</h1>
+    <h1>עברית</h1>
 
-    <div class="sidebar__stats" v-if="progressStore.completedCount > 0">
-      <div class="sidebar__stat">
+    <!-- Mode selector -->
+    <div class="sidebar__modes">
+      <button class="sidebar__mode-btn" @click="selectTypingMode">
+        <span class="sidebar__mode-icon">⌨️</span>
+        <span>הקלדה עיוורת</span>
+      </button>
+      <button class="sidebar__mode-btn" @click="selectVocabMode">
+        <span class="sidebar__mode-icon">📚</span>
+        <span>אוצר מילים</span>
+        <span v-if="vocabStore.dueItems.length > 0" class="sidebar__badge">
+          {{ vocabStore.dueItems.length }}
+        </span>
+      </button>
+    </div>
+
+    <div class="sidebar__stats" v-if="progressStore.completedCount > 0 || vocabStore.learnedCount > 0">
+      <div class="sidebar__stat" v-if="progressStore.streak > 0">
         <span class="sidebar__stat-value">{{ progressStore.streak }}</span>
         <span class="sidebar__stat-label">רצף</span>
       </div>
-      <div class="sidebar__stat">
+      <div class="sidebar__stat" v-if="progressStore.bestWPM > 0">
         <span class="sidebar__stat-value">{{ progressStore.bestWPM }}</span>
-        <span class="sidebar__stat-label">WPM מקסימום</span>
+        <span class="sidebar__stat-label">WPM</span>
+      </div>
+      <div class="sidebar__stat" v-if="vocabStore.learnedCount > 0">
+        <span class="sidebar__stat-value">{{ vocabStore.learnedCount }}/50</span>
+        <span class="sidebar__stat-label">מילים</span>
       </div>
     </div>
 
@@ -27,12 +61,14 @@ const progressStore = useProgressStore()
       title="שיעורי אותיות"
       emoji="⌨️"
       :exercises="exerciseStore.letterExercises"
+      @click="selectTypingMode"
     />
 
     <ExerciseList
       title="טקסטים"
       emoji="📖"
       :exercises="exerciseStore.textExercises"
+      @click="selectTypingMode"
     />
   </aside>
 </template>
@@ -57,12 +93,61 @@ const progressStore = useProgressStore()
     margin: 0 0 24px 0;
   }
 
+  &__modes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 24px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+  }
+
+  &__mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: white;
+    border: 2px solid #e9d5c9;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Noto Sans Hebrew', sans-serif;
+    font-size: 1.05em;
+    font-weight: 600;
+    color: #333;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      background: #fff8f3;
+      border-color: #2e8f94;
+      transform: translateX(-4px);
+      box-shadow: 0 4px 8px rgba(46, 143, 148, 0.15);
+    }
+  }
+
+  &__mode-icon {
+    font-size: 1.3em;
+  }
+
+  &__badge {
+    background: #ef4444;
+    color: white;
+    font-size: 0.75em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-right: auto;
+  }
+
   &__stats {
     display: flex;
-    gap: 24px;
+    gap: 16px;
     margin-bottom: 24px;
     width: 100%;
     justify-content: flex-end;
+    flex-wrap: wrap;
   }
 
   &__stat {
@@ -75,13 +160,13 @@ const progressStore = useProgressStore()
   }
 
   &__stat-value {
-    font-size: 1.5em;
+    font-size: 1.3em;
     font-weight: bold;
     color: #2e8f94;
   }
 
   &__stat-label {
-    font-size: 0.8em;
+    font-size: 0.75em;
     color: #666;
   }
 

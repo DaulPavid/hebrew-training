@@ -65,11 +65,12 @@ function handleClick() {
 <style scoped lang="scss">
 .exercise-menu-item {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: repeat(2, auto);
+  column-gap: 12px;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border-radius: 6px;
   border: none;
   background: transparent;
   align-items: center;
@@ -92,55 +93,57 @@ function handleClick() {
 
   &__wpm {
     font-family: monospace;
-    font-size: 1em;
+    font-size: 0.9em;
     color: #716054;
-    margin-right: 16px;
-    grid-row-start: 2;
+    grid-row: 1 / 3;
+    grid-column: 3;
+    align-self: center;
   }
 
   &__type {
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     justify-self: end;
     display: flex;
     align-items: center;
-    border-radius: 2px;
-    padding: 0 5px;
+    border-radius: 3px;
+    padding: 2px 8px;
     background: #dec8b7;
-    font-size: 0.75em;
+    font-size: 0.7em;
     color: white;
-    height: 15px;
     width: fit-content;
     grid-column: 2;
+    grid-row: 1;
   }
 
   &__keycaps {
-    grid-row-start: 2;
-    grid-column-start: 2;
+    grid-row: 2;
+    grid-column: 2;
     display: flex;
     flex-direction: row-reverse;
-    gap: 12px;
+    gap: 8px;
+    justify-self: end;
   }
 
   &__keycap {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     background: #fff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    font-size: 1.2em;
+    font-size: 1.1em;
     box-shadow: 0 2px 0 #bbb;
   }
 
   &__text-label {
-    font-size: 16px;
-    grid-row-start: 2;
-    grid-column-start: 2;
+    font-size: 15px;
+    grid-row: 1 / 3;
+    grid-column: 2;
     text-align: right;
     color: #410b13;
-    width: max-content;
+    align-self: center;
   }
 
   &__number {
@@ -152,12 +155,11 @@ function handleClick() {
     align-items: center;
     justify-content: center;
     border-radius: 20px;
-    grid-row-start: 2;
-    grid-column-start: 3;
-    height: 20px;
+    grid-row: 1 / 3; // Span both rows
+    grid-column: 1;
+    height: 24px;
+    min-width: 24px;
     align-self: center;
-    margin-left: 16px;
-    justify-self: flex-end;
   }
 }
 </style>

@@ -1,11 +1,36 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useExerciseStore } from '@/stores/exerciseStore'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import ExerciseView from '@/views/ExerciseView.vue'
+import VocabDrillView from '@/views/VocabDrillView.vue'
+
+const exerciseStore = useExerciseStore()
+
+// Current mode
+type AppMode = 'typing' | 'vocab'
+const currentMode = ref<AppMode>('typing')
+
+// Handle mode change from sidebar
+function handleModeChange(mode: AppMode) {
+  currentMode.value = mode
+}
+
+// Switch to typing mode when an exercise is selected
+watch(
+  () => exerciseStore.currentExercise,
+  (exercise) => {
+    if (exercise) {
+      currentMode.value = 'typing'
+    }
+  }
+)
 </script>
 
 <template>
-  <AppLayout>
-    <ExerciseView />
+  <AppLayout @mode-change="handleModeChange">
+    <ExerciseView v-if="currentMode === 'typing'" />
+    <VocabDrillView v-else-if="currentMode === 'vocab'" />
   </AppLayout>
 </template>
 
